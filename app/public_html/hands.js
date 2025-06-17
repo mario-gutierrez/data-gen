@@ -131,8 +131,8 @@ renderer.domElement.addEventListener('mousemove', (e) => {
     const deltaX = e.clientX - mouseX;
     const deltaY = e.clientY - mouseY;
 
-    cameraAngleY += deltaX * 0.01;
-    cameraAngleX -= deltaY * 0.01;
+    cameraAngleY -= deltaX * 0.01;
+    cameraAngleX += deltaY * 0.01;
     cameraAngleX = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, cameraAngleX));
 
     mouseX = e.clientX;
@@ -142,7 +142,7 @@ renderer.domElement.addEventListener('mousemove', (e) => {
 });
 
 renderer.domElement.addEventListener('wheel', (e) => {
-    cameraDistance += e.deltaY * 0.01;
+    cameraDistance -= e.deltaY * 0.01;
     cameraDistance = Math.max(3, Math.min(15, cameraDistance));
     updateCamera();
 });
