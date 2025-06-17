@@ -1,0 +1,68 @@
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            max-height: 90vh;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .finger-group {
+            margin-bottom: 20px;
+            border: 1px solid #444;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .finger-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4CAF50;
+        }
+
+        .joint-control {
+            margin-bottom: 8px;
+        }
+
+        .joint-control label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        .joint-control input[type="range"] {
+            width: 100%;
+            height: 20px;
+        }
+
+        .joint-control span {
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        #info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: #ccc;
+            font-size: 12px;
+        }
