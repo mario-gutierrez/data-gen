@@ -80,6 +80,7 @@ class Hand {
         palm.position.y = -0.5;
         palm.position.z = 0.6;
         this.root.add(palm);
+        this.joints['palm_0'] = this.root;
 
         // Create fingers
         const thumb = this.createFinger('thumb', 2, new THREE.Vector3(-0.6, -0.2, 0.4), Math.PI / 4);
@@ -149,8 +150,8 @@ renderer.domElement.addEventListener('wheel', (e) => {
 });
 
 // Setup UI controls
-const fingers = ['thumb', 'index', 'middle', 'ring', 'pinky'];
-const jointCounts = { thumb: 2, index: 3, middle: 3, ring: 3, pinky: 3 };
+const fingers = ['palm', 'thumb', 'index', 'middle', 'ring', 'pinky'];
+const jointCounts = { palm: 1, thumb: 2, index: 3, middle: 3, ring: 3, pinky: 3 };
 
 fingers.forEach(finger => {
     for (let i = 0; i < jointCounts[finger]; i++) {
