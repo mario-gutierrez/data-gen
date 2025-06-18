@@ -44,7 +44,7 @@ class Hand {
         fingerGroup.rotation.z = baseRotation;
 
         let currentGroup = fingerGroup;
-        const segmentLength = name === 'thumb' ? 0.8 : 1.0;
+        const segmentLength = name === 'thumb' ? 0.5 : 0.6;
         const segmentRadius = name === 'thumb' ? 0.15 : name === 'pinky' ? 0.1 : 0.12;
 
         for (let i = 0; i < segments; i++) {
