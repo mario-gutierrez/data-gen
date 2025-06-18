@@ -53,7 +53,7 @@ class Hand {
             const capsule = this.createCapsule(
                 segmentRadius,
                 segmentLength,
-                name === 'thumb' ? 0x8B4513 : 0xFFDBB3
+                0xFFDBB3
             );
             capsule.position.y = segmentLength / 2;
 
@@ -75,24 +75,25 @@ class Hand {
 
     createHand() {
         // Palm
-        const palm = this.createCapsule(0.8, 0.3, 0xFFE4C4);
+        const palm = this.createCapsule(0.8, 0.6, 0xFFE4C4);
         palm.rotation.x = Math.PI / 2;
         palm.position.y = -0.5;
+        palm.position.z = 0.6;
         this.root.add(palm);
 
         // Create fingers
         const thumb = this.createFinger('thumb', 2, new THREE.Vector3(-0.6, -0.2, 0.4), Math.PI / 4);
-        const index = this.createFinger('index', 3, new THREE.Vector3(-0.4, 0.2, 0.6));
+        const index = this.createFinger('index', 3, new THREE.Vector3(-0.4, 0.1, 0.6));
         const middle = this.createFinger('middle', 3, new THREE.Vector3(0, 0.2, 0.7));
-        const ring = this.createFinger('ring', 3, new THREE.Vector3(0.4, 0.2, 0.6));
-        const pinky = this.createFinger('pinky', 3, new THREE.Vector3(0.7, 0.2, 0.4));
+        const ring = this.createFinger('ring', 3, new THREE.Vector3(0.4, 0.1, 0.6));
+        const pinky = this.createFinger('pinky', 3, new THREE.Vector3(0.7, -0.3, 0.4));
 
         this.root.add(thumb, index, middle, ring, pinky);
     }
 
     setJointRotation(jointName, angle) {
         if (this.joints[jointName]) {
-            this.joints[jointName].rotation.z = THREE.MathUtils.degToRad(angle);
+            this.joints[jointName].rotation.x = THREE.MathUtils.degToRad(angle);
         }
     }
 }
