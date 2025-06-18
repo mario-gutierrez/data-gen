@@ -167,6 +167,62 @@ fingers.forEach(finger => {
     }
 });
 
+function updateBoundingBox(rootGroup, canvas) {
+    let minX = Infinity, minY = Infinity;
+    let maxX = -Infinity, maxY = -Infinity;
+
+    // Ensure world matrices are up to date
+    rootGroup.updateMatrixWorld(true);
+
+    // Use traverse to visit the group and all its descendants
+    rootGroup.traverse(node => {
+        // Check if the node is a Mesh and has geometry with positions
+        if (node.isMesh && node.geometry?.attributes.position) {
+            const positions = node.geometry.attributes.position;
+
+            for (let i = 0; i < positions.count; i++) {
+                // Create a vector for the current vertex
+                const vertex = new THREE.Vector3().fromBufferAttribute(positions, i);
+
+                // Transform the local vertex position to world coordinates.
+                // node.matrixWorld is used as it's the final transform matrix.
+                vertex.applyMatrix4(node.matrixWorld);
+
+                // Project the world coordinate to screen space (NDC)
+                vertex.project(camera);
+
+                // Convert Normalized Device Coordinates (NDC) to screen pixels
+                const x = (vertex.x * 0.5 + 0.5) * canvas.width;
+                const y = (vertex.y * -0.5 + 0.5) * canvas.height;
+
+                // Update the min and max screen coordinates
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
+            }
+        }
+    });
+
+    // Calculate width and height of the bounding box
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Check if the calculated values are finite and positive.
+    // This prevents errors if the object is off-screen.
+    if (isFinite(width) && isFinite(height) && width > 0 && height > 0) {
+        // Update the CSS for the bounding box div
+        boundingBox.style.left = `${minX}px`;
+        boundingBox.style.top = `${minY}px`;
+        boundingBox.style.width = `${width}px`;
+        boundingBox.style.height = `${height}px`;
+        boundingBox.style.display = 'block'; // Make it visible
+    } else {
+        // Hide the box if the object is off-screen or has no size
+        boundingBox.style.display = 'none';
+    }
+}
+
 // Initial camera setup
 updateCamera();
 
@@ -174,6 +230,7 @@ updateCamera();
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
+    updateBoundingBox(hand.root, renderer.domElement);
 }
 
 animate();
