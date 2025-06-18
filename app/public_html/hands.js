@@ -1,10 +1,10 @@
 // Scene setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x2a2a2a);
+scene.background = null;
 
 const rendererSize = { w: 640, h: 480 };
 const camera = new THREE.PerspectiveCamera(75, rendererSize.w / rendererSize.h, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(rendererSize.w, rendererSize.h);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
