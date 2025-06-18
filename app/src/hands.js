@@ -1,6 +1,19 @@
 // Scene setup
 const scene = new THREE.Scene();
 scene.background = null;
+const loader = new THREE.TextureLoader();
+loader.load(
+    './img/mx_mechanical.jpg',
+    (texture) => {
+        // This function is called when the image is successfully loaded
+        scene.background = texture;
+    },
+    undefined, // onProgress callback (optional)
+    (err) => {
+        // This function is called if there's an error loading the image
+        console.error('An error happened while loading the background image.', err);
+    }
+);
 
 const rendererSize = { w: 640, h: 480 };
 const camera = new THREE.PerspectiveCamera(75, rendererSize.w / rendererSize.h, 0.1, 1000);
@@ -15,11 +28,29 @@ const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-directionalLight.position.set(5, 10, 5);
+directionalLight.position.set(6, 5, 15);
 directionalLight.castShadow = true;
+// Adjust the shadow camera frustum for better performance and quality
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 30;
+directionalLight.shadow.camera.left = -15;
+directionalLight.shadow.camera.right = 15;
+directionalLight.shadow.camera.top = 15;
+directionalLight.shadow.camera.bottom = -15;
+// Increase shadow map resolution for sharper shadows
 directionalLight.shadow.mapSize.width = 2048;
 directionalLight.shadow.mapSize.height = 2048;
 scene.add(directionalLight);
+
+// Create an invisible plane to receive shadows, placed behind the hand.
+// This plane will only render the shadows cast upon it.
+const shadowReceiverPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(100, 100), // Large enough to cover the view
+    new THREE.ShadowMaterial({ opacity: 0.3 }) // Controls the shadow's darkness
+);
+shadowReceiverPlane.receiveShadow = true;
+shadowReceiverPlane.position.z = -0.1; // Place it behind the hand
+scene.add(shadowReceiverPlane);
 
 // Hand structure
 class Hand {
