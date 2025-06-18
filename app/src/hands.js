@@ -253,17 +253,20 @@ function updateBoundingBox(rootGroup, canvas) {
         boundingBox.style.width = `${width}px`;
         boundingBox.style.height = `${height}px`;
         boundingBox.style.display = 'block'; // Make it visible
+        return [minX, minY, width, height];
     } else {
         // Hide the box if the object is off-screen or has no size
         boundingBox.style.display = 'none';
     }
+    return [];
 }
 
 // Initial camera setup
 updateCamera();
-
+let saveImage = true;
+let totalFrames = 0;
 let frame = 0;
-const maxFrames = 100;
+const maxFrames = 2;
 const deltaAnglePI = Math.PI / maxFrames;
 const deltaAngle2PI = Math.PI * 2 / maxFrames;
 const maxXpos = 7;
@@ -271,6 +274,31 @@ const maxYpos = 7;
 const maxZpos = 3;
 let handYpos = -maxYpos;
 let handZpos = -maxZpos;
+const delayInMilliseconds = 100;
+const annotations = {};
+let annotationsSaved = false;
+
+function saveJsonStringAsFile(data, filename) {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.json`; // This is the filename the user will be prompted with.
+    document.body.appendChild(link); // The link needs to be in the document to be clickable.
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url); // Frees up memory by releasing the object URL.
+}
+function saveImageToDisk(filename) {
+    const image = renderer.domElement.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = `${filename}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 function animateHand() {
     const periodicValuePI = Math.sin(frame * deltaAnglePI);
     const periodicValue2PI = Math.sin(frame * deltaAngle2PI);
@@ -293,14 +321,31 @@ function animateHand() {
         handYpos = -maxYpos;
         handZpos++;
     }
+
+    if (handZpos < maxZpos) {
+        const imageName = `frame-${totalFrames}`;
+        const bb = updateBoundingBox(hand.root, renderer.domElement);
+        const bbArray = [];
+        bbArray.push(bb);
+        annotations[imageName] = bbArray;
+        totalFrames++;
+        if (saveImage) {
+            saveImageToDisk(imageName); // Use frame number for filename
+        }
+        setTimeout(() => {
+            requestAnimationFrame(animate);
+        }, delayInMilliseconds);
+    } else if (!annotationsSaved) {
+        saveJsonStringAsFile(annotations, `annotations`);
+        annotationsSaved = true;
+    }
 }
 
 // Animation loop
 function animate() {
-    requestAnimationFrame(animate);
     renderer.render(scene, camera);
     animateHand();
-    updateBoundingBox(hand.root, renderer.domElement);
+
 }
 
 animate();
