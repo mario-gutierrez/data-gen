@@ -124,9 +124,14 @@ class Hand {
         this.root.add(thumb, index, middle, ring, pinky);
     }
 
-    setJointRotation(jointName, angle) {
+    setJointRotation(jointName, ax, ay = 0, az = 0, px = 0, py = 0, pz = 0) {
         if (this.joints[jointName]) {
-            this.joints[jointName].rotation.x = THREE.MathUtils.degToRad(angle);
+            this.joints[jointName].rotation.x = THREE.MathUtils.degToRad(ax);
+            this.joints[jointName].rotation.y = THREE.MathUtils.degToRad(ay);
+            this.joints[jointName].rotation.z = THREE.MathUtils.degToRad(az);
+            this.joints[jointName].position.x = px;
+            this.joints[jointName].position.y = py;
+            this.joints[jointName].position.z = pz;
         }
     }
 }
@@ -257,10 +262,44 @@ function updateBoundingBox(rootGroup, canvas) {
 // Initial camera setup
 updateCamera();
 
+let frame = 0;
+const maxFrames = 100;
+const deltaAnglePI = Math.PI / maxFrames;
+const deltaAngle2PI = Math.PI * 2 / maxFrames;
+const maxXpos = 7;
+const maxYpos = 7;
+const maxZpos = 3;
+let handYpos = -maxYpos;
+let handZpos = -maxZpos;
+function animateHand() {
+    const periodicValuePI = Math.sin(frame * deltaAnglePI);
+    const periodicValue2PI = Math.sin(frame * deltaAngle2PI);
+    const angle = 90 * periodicValuePI;
+    ['thumb', 'index', 'middle', 'ring', 'pinky'].forEach(finger => {
+        for (let i = 0; i < jointCounts[finger]; i++) {
+            hand.setJointRotation(`${finger}_${i}`, -angle);
+        }
+    });
+
+    hand.setJointRotation(`palm_0`, 45 * periodicValue2PI, 45 * periodicValue2PI, 45 * periodicValue2PI, maxXpos * periodicValue2PI, handYpos, handZpos);
+
+    if (frame < maxFrames) {
+        frame++;
+    } else if (handYpos < maxYpos) {
+        frame = 0;
+        handYpos++;
+    } else if (handZpos < maxZpos) {
+        frame = 0;
+        handYpos = -maxYpos;
+        handZpos++;
+    }
+}
+
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
+    animateHand();
     updateBoundingBox(hand.root, renderer.domElement);
 }
 
